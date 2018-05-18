@@ -7,29 +7,30 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import java.awt.Color;
+
 import org.json.JSONObject;
 
-import com.maxmind.geoip.Location;
-import com.maxmind.geoip.LookupService;
+
+ 
 
 @Path("/weather")
 public class Weather {
-
+ 
 	static int[][] matrix = new int[32][64];
-	static ArrayList<String> weather = new ArrayList<>();
+  static Color[][] colorMatrix = new Color[32][64];
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getWeather() throws IOException {
-		updateMatrix();
-		return "Weather data collected from your location is: " + weather.toString();
+		ArrayList<String> mData = updateMatrix();
+		return "Weather data collected from your location is: " + mData.toString();
 	}
 
 	/**
@@ -37,22 +38,23 @@ public class Weather {
 	 * 
 	 * @throws IOException
 	 */
-	public static void updateMatrix() throws IOException {
+	public ArrayList<String> updateMatrix() throws IOException {
 
 		// Gets the device's public IP address
-		String IP = getCurrentIP();
-		System.out.println("Your public IP address is : " + IP);
-		// Get GPS coordinates
-		LookupService cl = new LookupService("GeoLiteCity.dat",
-				LookupService.GEOIP_MEMORY_CACHE | LookupService.GEOIP_CHECK_CACHE);
-
-		Location location = cl.getLocation(IP);
-		float latitude = location.latitude;
-		float longitude = location.longitude;
-		String weatherData = getWeather(latitude, longitude);
-		weather = extractData(weatherData);
-		System.out.println("Data needed: " + weather.toString());
-		initializeMatrix();
+	//	String IP = getCurrentIP();
+		//System.out.println("Your public IP address is : " + IP);
+//		// Get GPS coordinates
+//		LookupService cl = new LookupService("GeoLiteCity.dat",
+//				LookupService.GEOIP_MEMORY_CACHE | LookupService.GEOIP_CHECK_CACHE);
+//
+//		Location location = cl.getLocation(IP);
+//		float latitude = location.latitude;
+//		float longitude = location.longitude;
+		String weatherData = getWeather(47.2445343f, -122.43777349999999f);
+		ArrayList<String> weather = extractData(weatherData);
+		return weather;
+		//System.out.println("Data needed: " + weather.toString());
+		//initializeMatrix();
 	}
 
 	/**
@@ -60,7 +62,7 @@ public class Weather {
 	 * 
 	 * @return the public IP address of this machine.
 	 */
-	private static String getCurrentIP() {
+	private String getCurrentIP() {
 		// Find public IP address
 		String systemipaddress = "";
 		try {
@@ -75,14 +77,14 @@ public class Weather {
 		}
 		return systemipaddress;
 	}
-
+ 
 	/**
 	 * Extract data needed for our calculations from the JSON response.
 	 * 
 	 * @param weatherData
 	 * @return the date, temperature and look from a location
 	 */
-	private static ArrayList<String> extractData(String weatherData) {
+	private ArrayList<String> extractData(String weatherData) {
 
 		ArrayList<String> data = new ArrayList<>();
 		// Extracting date, temperature and look data from nested JSON array
@@ -111,6 +113,7 @@ public class Weather {
 	}
 
 	/**
+   * TODO:
 	 * Initializes the 2d matrix array with 0s
 	 */
 	public static void initializeMatrix() {
@@ -130,7 +133,36 @@ public class Weather {
 		// System.out.println();
 		// }
 	}
+  
+  // todo:
+  public static LinkedList<Pixel> convertMatrix(int [][] theMatrix) {
+  
+  // Use For Loop, if value is 1 then store its position, col is x and row is y value.
+  
+    Color tempColor = colorMatrix[col][row];
+  	Pixel tempPixel = new Pixel(col, row, tempColor.getRed(),tempColor.getGreen(), tempColor.getBlue());
+    
+  }
 
+	public static int[][] clearMatrix(int[][] theMatrix, int startCol, int startRow, int width, int height) {
+  
+  }
+
+	public static int[][] addToMatrix(int[][] theMatrix, LinkedList<Pixel> theLayout, int startCol, int startRow) {
+		for (int i; i < theLayout.size; i++) {
+    	col = theLayout.get(i).getCol();
+      row = theLayout.get(i).getRow();
+      r = theLayout.get(i).getR();
+      g = theLayout.get(i).getG();
+      b = theLayout.get(i).getB();
+      
+      theMatrix
+    
+    
+    }
+  
+  
+  }
 	/**
 	 * Makes call to weather API, returns a json response containing weather data.
 	 * 
@@ -164,4 +196,49 @@ public class Weather {
 		}
 		return result;
 	}
+  
+  // Object class for each matrix pixel
+  private Class Pixel {
+  	private int col;
+    private int row;
+  	private int r;
+    private int g;
+    private int b;
+    
+    // Consctructor
+    public Pixel(int col, int row, int r, int g, int b) {
+    	this.col = col;
+      this.row = row;
+      this.r = r;
+      this.g = g;
+      this.b = b;
+    }
+    
+    /**
+    * Defining getters
+    *
+    **/
+    public int getCol() {
+    return col;
+    }
+    
+    public int getRow() {
+    return row;
+    }
+    
+    public int getR() {
+    return r;
+    }
+    
+    public int getG() {
+    return g;
+    }
+    
+    public int getB() {
+    return b;
+    }
+  }
+  
+  
 }
+
