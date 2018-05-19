@@ -191,16 +191,18 @@ public class Weather {
 	}
 
 	public static void addToMatrix(LinkedList<Pixel> theLayout, int startCol, int startRow) {
-		for (int i; i < theLayout.size; i++) {
-			row = theLayout.getRow();
-			col = theLayout.getCol();
+		int row, col, r, g, b = 0;
+
+		for (int i = 0; i < theLayout.size(); i++) {
+			row = theLayout.get(i).getRow();
+			col = theLayout.get(i).getCol();
 
 			// Not sure it is [col][row] or [row][col]
 			matrix[row + startRow][col + startCol] = 1;
 
-			r = theLayout.getR();
-			g = theLayout.getG();
-			b = theLayout.getB();
+			r = theLayout.get(i).getR();
+			g = theLayout.get(i).getG();
+			b = theLayout.get(i).getB();
 
 			colorMatrix[row + startRow][col + startCol] = new Color(r, g, b);
 		}
@@ -209,16 +211,17 @@ public class Weather {
 	public static LinkedList<Pixel> convertMatrix() {
 		// Use For Loop, if value is 1 then store its position, col is x and row is y
 		// value.
-		LinkedList<Pixel> pixelArray = new LinkedList<>()
+		LinkedList<Pixel> pixelArray = new LinkedList<>();
 
 		for (int row = 0; row < 32; row++) {
 			for (int col = 0; col < 64; col++) {
 				if (matrix[row][col] == 1) {
 					Color tempColor = colorMatrix[row][col];
-					Pixel tempPixel = new Pixel(col, row, tempColor.getRed(), tempColor.getGreen(), tempColor.getBlue());
+					Pixel tempPixel = new Pixel(col, row, tempColor.getRed(), tempColor.getGreen(),
+							tempColor.getBlue());
 
 					pixelArray.add(tempPixel);
-				}	
+				}
 			}
 		}
 
@@ -233,7 +236,6 @@ public class Weather {
 			}
 		}
 	}
-
 
 	/**
 	 * Makes call to weather API, returns a json response containing weather data.
@@ -276,7 +278,7 @@ public class Weather {
 	 * @author Ming Hoi & Ibrahim Diabate
 	 *
 	 */
-	private class Pixel {
+	class Pixel {
 		private int col;
 		private int row;
 		private int r;
