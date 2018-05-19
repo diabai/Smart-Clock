@@ -190,34 +190,50 @@ public class Weather {
 		}
 	}
 
-	// todo:
-	public static LinkedList<Pixel> convertMatrix(int[][] theMatrix) {
+	public static void addToMatrix(LinkedList<Pixel> theLayout, int startCol, int startRow) {
+		for (int i; i < theLayout.size; i++) {
+			row = theLayout.getRow();
+			col = theLayout.getCol();
 
+			// Not sure it is [col][row] or [row][col]
+			matrix[row + startRow][col + startCol] = 1;
+
+			r = theLayout.getR();
+			g = theLayout.getG();
+			b = theLayout.getB();
+
+			colorMatrix[row + startRow][col + startCol] = new Color(r, g, b);
+		}
+	}
+
+	public static LinkedList<Pixel> convertMatrix() {
 		// Use For Loop, if value is 1 then store its position, col is x and row is y
 		// value.
+		LinkedList<Pixel> pixelArray = new LinkedList<>()
 
-		Color tempColor = colorMatrix[col][row];
-		Pixel tempPixel = new Pixel(col, row, tempColor.getRed(), tempColor.getGreen(), tempColor.getBlue());
+		for (int row = 0; row < 32; row++) {
+			for (int col = 0; col < 64; col++) {
+				if (matrix[row][col] == 1) {
+					Color tempColor = colorMatrix[row][col];
+					Pixel tempPixel = new Pixel(col, row, tempColor.getRed(), tempColor.getGreen(), tempColor.getBlue());
 
+					pixelArray.add(tempPixel);
+				}	
+			}
+		}
+
+		return pixelArray;
 	}
 
-	public static int[][] clearMatrix(int[][] theMatrix, int startCol, int startRow, int width, int height) {
-
+	public static void clearMatrix(int startCol, int startRow, int width, int height) {
+		for (int row = startRow; row < startRow + height; row++) {
+			for (int col = startCol; col < startCol + width; col++) {
+				matrix[row][col] = 0;
+				colorMatrix[row][col] = null;
+			}
+		}
 	}
 
-	public static int[][] addToMatrix(int[][] theMatrix, LinkedList<Pixel> theLayout, int startCol, int startRow) {
-		for (int i; i < theLayout.size; i++) {
-    	col = theLayout.get(i).getCol();
-      row = theLayout.get(i).getRow();
-      r = theLayout.get(i).getR();
-      g = theLayout.get(i).getG();
-      b = theLayout.get(i).getB();
-      
-      theMatrix
-    }
-  
-  
-  }
 
 	/**
 	 * Makes call to weather API, returns a json response containing weather data.
