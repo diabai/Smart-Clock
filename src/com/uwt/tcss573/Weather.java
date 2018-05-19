@@ -1,6 +1,7 @@
 package com.uwt.tcss573;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import java.awt.Color;
 
 import org.json.JSONObject;
+
 /**
  * 
  * @author ikdiabate
@@ -37,13 +39,13 @@ public class Weather {
 		ArrayList<String> mData = updateMatrix();
 		return "Weather data collected from your location is: " + mData.toString();
 	}
-	
+
 	/**
 	 * Stores weather codes in a hashmap to be retrieved later.
 	 */
 	public void generateCodes() {
 		codes = new HashMap<>();
-		
+
 		codes.put(11, "Showers");
 		codes.put(26, "Cloudy");
 		codes.put(28, "Mostly Cloudy");
@@ -113,17 +115,17 @@ public class Weather {
 		JSONObject query = (JSONObject) obj.get("query");
 		JSONObject results = (JSONObject) query.get("results");
 		JSONObject channel = (JSONObject) results.get("channel");
-		
+
 		// ------------- Extract the weather condition of the location
 		JSONObject item = (JSONObject) channel.get("item");
 		JSONObject condition = (JSONObject) item.get("condition");
-		
+
 		String weatherCode = condition.getString("code");
 		data.add(weatherCode);
-		
+
 		String temperature = condition.getString("temp");
 		data.add(temperature);
-	
+
 		return data;
 	}
 
@@ -152,6 +154,42 @@ public class Weather {
 		}
 	}
 
+	/**
+	 * Reads a file and displays its contents
+	 *
+	 */
+	public static void readFile(String filename) {
+
+		BufferedReader br = null;
+		FileReader fr = null;
+
+		try {
+
+			// br = new BufferedReader(new FileReader(FILENAME));
+			fr = new FileReader(filename);
+			br = new BufferedReader(fr);
+
+			String sCurrentLine;
+
+			while ((sCurrentLine = br.readLine()) != null) {
+				System.out.println(sCurrentLine);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+
+			try {
+				if (br != null)
+					br.close();
+
+				if (fr != null)
+					fr.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
 	// todo:
 	public static LinkedList<Pixel> convertMatrix(int[][] theMatrix) {
 
@@ -176,8 +214,6 @@ public class Weather {
       b = theLayout.get(i).getB();
       
       theMatrix
-    
-    
     }
   
   
@@ -218,7 +254,9 @@ public class Weather {
 	}
 
 	/**
-	 * Class to represent and store information about each matrix pixel such as its position and color.
+	 * Class to represent and store information about each matrix pixel such as its
+	 * position and color.
+	 * 
 	 * @author Ming Hoi & Ibrahim Diabate
 	 *
 	 */
