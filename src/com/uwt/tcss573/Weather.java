@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,21 +18,40 @@ import javax.ws.rs.core.MediaType;
 import java.awt.Color;
 
 import org.json.JSONObject;
-
-
- 
-
+/**
+ * 
+ * @author ikdiabate
+ *
+ */
 @Path("/weather")
 public class Weather {
- 
+
 	static int[][] matrix = new int[32][64];
-  static Color[][] colorMatrix = new Color[32][64];
+	static Color[][] colorMatrix = new Color[32][64];
+	static HashMap<Integer, String> codes;
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getWeather() throws IOException {
+		generateCodes();
 		ArrayList<String> mData = updateMatrix();
 		return "Weather data collected from your location is: " + mData.toString();
+	}
+	
+	/**
+	 * Stores weather codes in a hashmap to be retrieved later.
+	 */
+	public void generateCodes() {
+		codes = new HashMap<>();
+		
+		codes.put(11, "Showers");
+		codes.put(26, "Cloudy");
+		codes.put(28, "Mostly Cloudy");
+		codes.put(30, "Partly Cloudy");
+		codes.put(32, "Sunny");
+		codes.put(34, "Mostly Sunny");
+		codes.put(4, "Thunderstorm");
+		codes.put(47, "Scattered Thunderstorm");
 	}
 
 	/**
@@ -41,20 +62,20 @@ public class Weather {
 	public ArrayList<String> updateMatrix() throws IOException {
 
 		// Gets the device's public IP address
-	//	String IP = getCurrentIP();
-		//System.out.println("Your public IP address is : " + IP);
-//		// Get GPS coordinates
-//		LookupService cl = new LookupService("GeoLiteCity.dat",
-//				LookupService.GEOIP_MEMORY_CACHE | LookupService.GEOIP_CHECK_CACHE);
-//
-//		Location location = cl.getLocation(IP);
-//		float latitude = location.latitude;
-//		float longitude = location.longitude;
+		// String IP = getCurrentIP();
+		// System.out.println("Your public IP address is : " + IP);
+		// // Get GPS coordinates
+		// LookupService cl = new LookupService("GeoLiteCity.dat",
+		// LookupService.GEOIP_MEMORY_CACHE | LookupService.GEOIP_CHECK_CACHE);
+		//
+		// Location location = cl.getLocation(IP);
+		// float latitude = location.latitude;
+		// float longitude = location.longitude;
 		String weatherData = getWeather(47.2445343f, -122.43777349999999f);
 		ArrayList<String> weather = extractData(weatherData);
 		return weather;
-		//System.out.println("Data needed: " + weather.toString());
-		//initializeMatrix();
+		// System.out.println("Data needed: " + weather.toString());
+		// initializeMatrix();
 	}
 
 	/**
@@ -77,7 +98,7 @@ public class Weather {
 		}
 		return systemipaddress;
 	}
- 
+
 	/**
 	 * Extract data needed for our calculations from the JSON response.
 	 * 
@@ -92,29 +113,22 @@ public class Weather {
 		JSONObject query = (JSONObject) obj.get("query");
 		JSONObject results = (JSONObject) query.get("results");
 		JSONObject channel = (JSONObject) results.get("channel");
-
-		// -----Extracting city & State from Location object
-		JSONObject location = (JSONObject) channel.get("location");
-		String city = location.getString("city");
-		String state = location.getString("region");
-		data.add(city);
-		data.add(state);
-		// -------------
+		
+		// ------------- Extract the weather condition of the location
 		JSONObject item = (JSONObject) channel.get("item");
 		JSONObject condition = (JSONObject) item.get("condition");
-
-		String date = condition.getString("date");
-		data.add(date);
+		
+		String weatherCode = condition.getString("code");
+		data.add(weatherCode);
+		
 		String temperature = condition.getString("temp");
 		data.add(temperature);
-		String looks = condition.getString("text");
-		data.add(looks);
+	
 		return data;
 	}
 
 	/**
-   * TODO:
-	 * Initializes the 2d matrix array with 0s
+	 * Initializes the matrix.
 	 */
 	public static void initializeMatrix() {
 
@@ -123,30 +137,35 @@ public class Weather {
 				matrix[row][col] = 0;
 			}
 		}
-		// Prints out the matix
-		// for (int[] x : matrix)
-		// {
-		// for (int y : x)
-		// {
-		// System.out.print(y + " ");
-		// }
-		// System.out.println();
-		// }
 	}
-  
-  // todo:
-  public static LinkedList<Pixel> convertMatrix(int [][] theMatrix) {
-  
-  // Use For Loop, if value is 1 then store its position, col is x and row is y value.
-  
-    Color tempColor = colorMatrix[col][row];
-  	Pixel tempPixel = new Pixel(col, row, tempColor.getRed(),tempColor.getGreen(), tempColor.getBlue());
-    
-  }
+
+	/**
+	 * Displays the contents of the matrix.
+	 */
+	public static void displayMatrix() {
+		// Prints out the matix
+		for (int[] x : matrix) {
+			for (int y : x) {
+				System.out.print(y + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	// todo:
+	public static LinkedList<Pixel> convertMatrix(int[][] theMatrix) {
+
+		// Use For Loop, if value is 1 then store its position, col is x and row is y
+		// value.
+
+		Color tempColor = colorMatrix[col][row];
+		Pixel tempPixel = new Pixel(col, row, tempColor.getRed(), tempColor.getGreen(), tempColor.getBlue());
+
+	}
 
 	public static int[][] clearMatrix(int[][] theMatrix, int startCol, int startRow, int width, int height) {
-  
-  }
+
+	}
 
 	public static int[][] addToMatrix(int[][] theMatrix, LinkedList<Pixel> theLayout, int startCol, int startRow) {
 		for (int i; i < theLayout.size; i++) {
@@ -163,6 +182,7 @@ public class Weather {
   
   
   }
+
 	/**
 	 * Makes call to weather API, returns a json response containing weather data.
 	 * 
@@ -196,49 +216,51 @@ public class Weather {
 		}
 		return result;
 	}
-  
-  // Object class for each matrix pixel
-  private Class Pixel {
-  	private int col;
-    private int row;
-  	private int r;
-    private int g;
-    private int b;
-    
-    // Consctructor
-    public Pixel(int col, int row, int r, int g, int b) {
-    	this.col = col;
-      this.row = row;
-      this.r = r;
-      this.g = g;
-      this.b = b;
-    }
-    
-    /**
-    * Defining getters
-    *
-    **/
-    public int getCol() {
-    return col;
-    }
-    
-    public int getRow() {
-    return row;
-    }
-    
-    public int getR() {
-    return r;
-    }
-    
-    public int getG() {
-    return g;
-    }
-    
-    public int getB() {
-    return b;
-    }
-  }
-  
-  
-}
 
+	/**
+	 * Class to represent and store information about each matrix pixel such as its position and color.
+	 * @author Ming Hoi & Ibrahim Diabate
+	 *
+	 */
+	private class Pixel {
+		private int col;
+		private int row;
+		private int r;
+		private int g;
+		private int b;
+
+		// Consctructor
+		public Pixel(int col, int row, int r, int g, int b) {
+			this.col = col;
+			this.row = row;
+			this.r = r;
+			this.g = g;
+			this.b = b;
+		}
+
+		/**
+		 * Defining getters
+		 *
+		 **/
+		public int getCol() {
+			return col;
+		}
+
+		public int getRow() {
+			return row;
+		}
+
+		public int getR() {
+			return r;
+		}
+
+		public int getG() {
+			return g;
+		}
+
+		public int getB() {
+			return b;
+		}
+	}
+
+}
