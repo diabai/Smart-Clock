@@ -208,7 +208,7 @@ public class Weather {
 		}
 	}
 
-	public static LinkedList<Pixel> convertMatrix() {
+	public LinkedList<Pixel> convertMatrix() {
 		// Use For Loop, if value is 1 then store its position, col is x and row is y
 		// value.
 		LinkedList<Pixel> pixelArray = new LinkedList<>();
