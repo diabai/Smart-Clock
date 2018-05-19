@@ -164,8 +164,6 @@ public class Weather {
 		FileReader fr = null;
 
 		try {
-
-			// br = new BufferedReader(new FileReader(FILENAME));
 			fr = new FileReader(filename);
 			br = new BufferedReader(fr);
 
@@ -224,7 +222,6 @@ public class Weather {
 				}
 			}
 		}
-
 		return pixelArray;
 	}
 
