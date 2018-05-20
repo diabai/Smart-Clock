@@ -28,6 +28,15 @@ import org.json.JSONObject;
 @Path("/weather")
 public class Weather {
 
+	final int CODE_SHOWERS = 11;
+	final int CODE_CLOUDY = 26;
+	final int CODE_MOSTLY_CLOUDY = 28;
+	final int CODE_PARTLY_CLOUDY = 30;
+	final int CODE_SUNNY = 32;
+	final int CODE_MOSTLY_SUNNY = 34;
+	final int CODE_THUNDERSTORM = 4;
+	final int CODE_SCATTERED_THUNDERSTORM = 47;
+	
 	static int[][] matrix = new int[32][64];
 	static Color[][] colorMatrix = new Color[32][64];
 	static HashMap<Integer, String> codes;
@@ -36,50 +45,75 @@ public class Weather {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getWeather() throws IOException {
 		generateCodes();
-		ArrayList<String> mData = updateMatrix();
+		
+		// Create an empty matrix
+		initializeMatrix();
+		
+		// Get Weather data and process it
+		String response = getWeather(47.2445343f, -122.43777349999999f);
+		ArrayList<String> weather = extractData(response);
+		
+		// Adding layout to the matrix
+		addWeatherIcon(Integer.parseInt(weather[0]));
+		addTemperature(weather[1]);
+		
+		// Convert the matrix to array
+		LinkedList<Pixel> responseArray = convertMatrix();
+		
+		// After this, create a json file and add the responseArray to it as a text.
+		// When loop every pixel in the linkedlist, dont forget to add "\n" to indicate
+		// each new line.
+
+		String responseText = 
+		
+		// Maybe dont need json file, just return the json file as a plain text.
+		// Then i will convert the plain text to json in the pi.
 		return "Weather data collected from your location is: " + mData.toString();
 	}
 
 	/**
-	 * Stores weather codes in a hashmap to be retrieved later.
+	 * Add the weather icon to the matrix layout.
+	 *
 	 */
-	public void generateCodes() {
-		codes = new HashMap<>();
-
-		codes.put(11, "Showers");
-		codes.put(26, "Cloudy");
-		codes.put(28, "Mostly Cloudy");
-		codes.put(30, "Partly Cloudy");
-		codes.put(32, "Sunny");
-		codes.put(34, "Mostly Sunny");
-		codes.put(4, "Thunderstorm");
-		codes.put(47, "Scattered Thunderstorm");
+        private void addWeatherIcon(int theCode) {
+		String filename = "";
+		if (theCode == 26 || theCode == 28 || theCode == 30) {
+			filename += "cloud.csv";
+		} else if (theCode == 11) {
+			fileame += "rain_shower.csv";
+		} else if (theCode == 32 || theCode = 34) {
+			filename = "sun.csv";
+		} else if (theCode == 4 || theCode = 47) {
+			// Will add icon later
+			
+		} else {
+			// Need to add default action
+		}
+		
+		LinkedList<Pixel> layout = readFile(filename);
+		addToMatrix(layout, 20, 17);
 	}
 
 	/**
-	 * Updates the matrix
-	 * 
-	 * @throws IOException
+	 * Add the temperature to the matrix layout.
+	 *
 	 */
-	public ArrayList<String> updateMatrix() throws IOException {
-
-		// Gets the device's public IP address
-		// String IP = getCurrentIP();
-		// System.out.println("Your public IP address is : " + IP);
-		// // Get GPS coordinates
-		// LookupService cl = new LookupService("GeoLiteCity.dat",
-		// LookupService.GEOIP_MEMORY_CACHE | LookupService.GEOIP_CHECK_CACHE);
-		//
-		// Location location = cl.getLocation(IP);
-		// float latitude = location.latitude;
-		// float longitude = location.longitude;
-		String weatherData = getWeather(47.2445343f, -122.43777349999999f);
-		ArrayList<String> weather = extractData(weatherData);
-		return weather;
-		// System.out.println("Data needed: " + weather.toString());
-		// initializeMatrix();
+	private void addTemperature(String theTemperature) {
+		// Convert from int to char array
+		char[] tempChar = theTemperature.toCharArray();
+		
+		LinkedList<Pixel> layout = readFile(char[0] + ".csv");	
+		addToMatrix(layout, 2, 20);
+		
+		LinkedList<Pixel> layout = readFile(char[1] + ".csv");	
+		addToMatrix(layout, 8, 20);
+		
+		/* Will add the degree icon later.
+		LinkedList<Pixel> layout = readFile("degree.csv");
+		addToMatrix(layout, 14, 20);
+		*/
 	}
-
+	
 	/**
 	 * Finds the public IP address of this machine.
 	 * 
@@ -158,11 +192,12 @@ public class Weather {
 	 * Reads a file and displays its contents
 	 *
 	 */
-	public static void readFile(String filename) {
+	public static LinkedList<Pixel> readFile(String filename) {
 
 		BufferedReader br = null;
 		FileReader fr = null;
-
+		LinkedList<Pixel> layout = new LinkedList<>();
+		
 		try {
 			fr = new FileReader(filename);
 			br = new BufferedReader(fr);
@@ -170,7 +205,10 @@ public class Weather {
 			String sCurrentLine;
 
 			while ((sCurrentLine = br.readLine()) != null) {
-				System.out.println(sCurrentLine);
+				String line[] = sCurrentLine.split(",");
+				
+				Pixel tempPixel = new Pixel(line[0], line[1], line[2], line[3]m line[4]);
+				layout.add(tempPixel);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -186,8 +224,14 @@ public class Weather {
 				ex.printStackTrace();
 			}
 		}
+		
+		return layout;
 	}
 
+	/**
+	 * Add the layout to the matrix according to the starting column and row
+	 *
+	 */
 	public static void addToMatrix(LinkedList<Pixel> theLayout, int startCol, int startRow) {
 		int row, col, r, g, b = 0;
 
@@ -206,6 +250,10 @@ public class Weather {
 		}
 	}
 
+	/**
+	 * Convert the 2D matrix to 1D array.
+	 *
+	 */
 	public LinkedList<Pixel> convertMatrix() {
 		// Use For Loop, if value is 1 then store its position, col is x and row is y
 		// value.
@@ -225,6 +273,8 @@ public class Weather {
 		return pixelArray;
 	}
 
+	// Not really needed for now as we will initialize a new empty matrix for every call.
+	/*
 	public static void clearMatrix(int startCol, int startRow, int width, int height) {
 		for (int row = startRow; row < startRow + height; row++) {
 			for (int col = startCol; col < startCol + width; col++) {
@@ -233,7 +283,8 @@ public class Weather {
 			}
 		}
 	}
-
+	*/
+	
 	/**
 	 * Makes call to weather API, returns a json response containing weather data.
 	 * 
