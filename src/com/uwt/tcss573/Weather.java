@@ -40,10 +40,9 @@ public class Weather {
 	static int[][] matrix = new int[32][64];
 	static Color[][] colorMatrix = new Color[32][64];
 
-
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getWeather() throws IOException {
+	public static String getWeather() throws IOException {
 
 		// Create an empty matrix
 		initializeMatrix();
@@ -59,36 +58,31 @@ public class Weather {
 		// Convert the matrix to array
 		LinkedList<Pixel> pixelArray = convertMatrix();
 
-		// After this, create a json file and add the pixelArray to it as a text.
-		// When loop every pixel in the linkedlist, dont forget to add "\n" to indicate
-		// each new line.
-
+		// add "\n" to indicate
 		String responseText = "";
 		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j <  matrix.length; j++) {
-			responseText+= matrix[i][j];
+			for (int j = 0; j < matrix.length; j++) {
+				responseText += matrix[i][j];
 			}
 		}
-		
 
-		// Maybe dont need json file, just return the json file as a plain text.
-		// Then i will convert the plain text to json in the pi.
-		return ">>: " + responseText;
+		// Need to arrange into JSON String here.
+		return pixelArray.toString();
 	}
 
-//	getWeather Response
-//	{
-//		“settings”: {
-//			“”
-//		},
-//		“layout”: “1,1,255,255,0\n2,2,255,255,0”
-//	}
+	// getWeather Response
+	// {
+	// “settings”: {
+	// “”
+	// },
+	// “layout”: “1,1,255,255,0\n2,2,255,255,0”
+	// }
 
 	/**
 	 * Add the weather icon to the matrix layout.
 	 *
 	 */
-	private void addWeatherIcon(int theCode) {
+	private static void addWeatherIcon(int theCode) {
 		String filename = "";
 		if (theCode == 26 || theCode == 28 || theCode == 30) {
 			filename += "cloud.csv";
@@ -113,20 +107,20 @@ public class Weather {
 	 * Add the temperature to the matrix layout.
 	 *
 	 */
-	private void addTemperature(String theTemperature) {
+	private static void addTemperature(String theTemperature) {
 		// Convert the temperature to char array (e.g. from 12 to [1,2])
 		char[] tempChar = theTemperature.toCharArray();
-		
-		LinkedList<Pixel> layout = readFile(tempChar[0] + ".csv");	
+
+		LinkedList<Pixel> layout = readFile(tempChar[0] + ".csv");
 		addToMatrix(layout, 2, 20);
-		
-		LinkedList<Pixel> mLayout = readFile(tempChar[1] + ".csv");	
+
+		LinkedList<Pixel> mLayout = readFile(tempChar[1] + ".csv");
 		addToMatrix(mLayout, 8, 20);
-		
-		/* Will add the degree icon later.
-		LinkedList<Pixel> layout = readFile("degree.csv");
-		addToMatrix(layout, 14, 20);
-		*/
+
+		/*
+		 * Will add the degree icon later. LinkedList<Pixel> layout =
+		 * readFile("degree.csv"); addToMatrix(layout, 14, 20);
+		 */
 	}
 
 	/**
@@ -146,16 +140,16 @@ public class Weather {
 			r = theLayout.get(i).getR();
 			g = theLayout.get(i).getG();
 			b = theLayout.get(i).getB();
- 
+
 			colorMatrix[row + startRow][col + startCol] = new Color(r, g, b);
 		}
 	}
- 
+
 	/**
 	 * 
 	 * Convert the 2D matrix to 1D array (the LinkedList of Pixel).
 	 */
-	public LinkedList<Pixel> convertMatrix() { 
+	public static LinkedList<Pixel> convertMatrix() {
 		// Use For Loop, if value is 1 then store its position, col is x and row is y
 		// value.
 		LinkedList<Pixel> pixelArray = new LinkedList<>();
@@ -235,7 +229,7 @@ public class Weather {
 	 *            the entire raw JSON response returned from API call.
 	 * @return an ArrayList containing the code and temperature of a location.
 	 */
-	private ArrayList<String> extractData(String weatherData) {
+	private static ArrayList<String> extractData(String weatherData) {
 
 		ArrayList<String> data = new ArrayList<>();
 		// Extracting date, temperature and look data from nested JSON array
@@ -299,7 +293,7 @@ public class Weather {
 	 *            the file to read
 	 * @return a LinkedList of Pixel objects.
 	 */
-	public LinkedList<Pixel> readFile(String filename) {
+	public static LinkedList<Pixel> readFile(String filename) {
 
 		BufferedReader br = null;
 		FileReader fr = null;
@@ -341,7 +335,7 @@ public class Weather {
 	 * @author Ming Hoi & Ibrahim Diabate
 	 *
 	 */
-	class Pixel {
+	static class Pixel {
 		private int col;
 		private int row;
 		private int r;
@@ -380,11 +374,11 @@ public class Weather {
 		public int getB() {
 			return b;
 		}
-		
+
 		@Override
 		public String toString() {
-			
-		return col + ", "+ row + "RGB = " + r + ""+g+""+b;
+
+			return col + " " + row + " " + r + " " + g + " " + b;
 		}
 	}
 
