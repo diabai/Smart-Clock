@@ -36,10 +36,10 @@ public class Weather {
 	final int CODE_MOSTLY_SUNNY = 34;
 	final int CODE_THUNDERSTORM = 4;
 	final int CODE_SCATTERED_THUNDERSTORM = 47;
-
+	static ArrayList<String> weather = new ArrayList<>();
 	static int[][] matrix = new int[32][64];
 	static Color[][] colorMatrix = new Color[32][64];
-	static HashMap<Integer, String> codes;
+
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -50,7 +50,7 @@ public class Weather {
 
 		// Get Weather data and process it
 		String response = getWeather(47.2445343f, -122.43777349999999f);
-		ArrayList<String> weather = extractData(response);
+		weather = extractData(response);
 
 		// Adding layout to the matrix
 		addWeatherIcon(Integer.parseInt(weather.get(0)));
@@ -64,10 +64,16 @@ public class Weather {
 		// each new line.
 
 		String responseText = "";
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j <  matrix.length; j++) {
+			responseText+= matrix[i][j];
+			}
+		}
+		
 
 		// Maybe dont need json file, just return the json file as a plain text.
 		// Then i will convert the plain text to json in the pi.
-		return "Weather data collected from your location is: " + pixelArray.toString();
+		return ">>: " + responseText;
 	}
 
 //	getWeather Response
@@ -86,7 +92,7 @@ public class Weather {
 		String filename = "";
 		if (theCode == 26 || theCode == 28 || theCode == 30) {
 			filename += "cloud.csv";
-		} else if (theCode == 11) {
+		} else if (theCode == 11 || theCode == 12) {
 			filename += "rain_shower.csv";
 		} else if (theCode == 32 || theCode == 34) {
 			filename = "sun.csv";
@@ -96,6 +102,7 @@ public class Weather {
 
 		} else {
 			// Need to add default action
+			filename += "rain_shower.csv";
 		}
 
 		LinkedList<Pixel> layout = readFile(filename);
@@ -132,7 +139,7 @@ public class Weather {
 		for (int i = 0; i < theLayout.size(); i++) {
 			row = theLayout.get(i).getRow();
 			col = theLayout.get(i).getCol();
-
+			System.out.println("row = " + row + " col = " + col);
 			// Not sure it is [col][row] or [row][col]
 			matrix[row + startRow][col + startCol] = 1;
 
@@ -302,7 +309,7 @@ public class Weather {
 			fr = new FileReader(filename);
 			br = new BufferedReader(fr);
 
-			String sCurrentLine;
+			String sCurrentLine = "";
 
 			while ((sCurrentLine = br.readLine()) != null) {
 				String line[] = sCurrentLine.split(",");
@@ -372,6 +379,12 @@ public class Weather {
 
 		public int getB() {
 			return b;
+		}
+		
+		@Override
+		public String toString() {
+			
+		return col + ", "+ row + "RGB = " + r + ""+g+""+b;
 		}
 	}
 
