@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/json-20180130-sources.jar"/>
 	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/json-20180130.jar"/>
 	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/unirest-java-1.4.9.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/gson-2.6.2-javadoc.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

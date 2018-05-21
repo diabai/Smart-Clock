@@ -61,11 +61,12 @@ public class Weather {
 		// Convert the matrix to array
 		LinkedList<Pixel> pixelArray = convertMatrix(matrix);
 
+		//Gson mGson = new Gson();
 		// add "\n" to indicate
 		String responseText = "";
 		 
 		 for (int i = 0; i < pixelArray.size(); i++) {
-		 responseText+= pixelArray.get(i).toString();
+		 responseText+= pixelArray.get(i).toString();		
 		 responseText+="\n";
 		 }
 		 
@@ -369,7 +370,7 @@ public class Weather {
 		@Override
 		public String toString() {
 
-			return col + " " + row + " " + r + " " + g + " " + b;
+			return col + ", " + row + ", " + r + ", " + g + ", " + b;
 		}
 	}
 
