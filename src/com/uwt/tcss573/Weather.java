@@ -14,14 +14,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import java.awt.Color;
 
 import org.json.JSONObject;
+
+import com.google.gson.Gson;
 
 /**
  * 
@@ -44,13 +48,14 @@ public class Weather {
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getWeather() throws IOException {
+	public String getWeather1(@QueryParam("lat") float latitude, 
+            @QueryParam("lng") float longitude) throws IOException {
 		// Create and initialize empty matrix
 		int[][] matrix = new int[32][64];
 		initializeMatrix(matrix);
 
 		// Get Weather data and process it
-		String response = getWeather(47.2445343f, -122.43777349999999f);
+		String response = getWeather(latitude, longitude);
 		ArrayList<String> weather = extractData(response);
 
 		// Adding layout to the matrix
@@ -61,17 +66,25 @@ public class Weather {
 		// Convert the matrix to array
 		LinkedList<Pixel> pixelArray = convertMatrix(matrix);
 
-		//Gson mGson = new Gson();
+		
+		
 		// add "\n" to indicate
 		String responseText = "";
 		 
 		 for (int i = 0; i < pixelArray.size(); i++) {
-		 responseText+= pixelArray.get(i).toString();		
-		 responseText+="\n";
+		 responseText+= pixelArray.get(i).toString()+"\n";		
 		 }
 		 
+		// JSONObject obj = new JSONObject();
+
+	    //  obj.put("layout", responseText);
+	     // obj.put(, value)
+		 
+		// Gson mGson = new Gson();
+		//	String test = mGson.toJson(responseText);
+			
 		// Need to arrange into JSON String here.
-		return responseText;
+		return  responseText;     
 	}
 
 	// getWeather Response
@@ -197,7 +210,7 @@ public class Weather {
 	 * 
 	 * @return JSON object containing weather data.
 	 * @throws IOException
-	 */
+	 */ 
 	public String getWeather(float latitude, float longitude) throws IOException {
 
 		String result = "";
@@ -370,7 +383,7 @@ public class Weather {
 		@Override
 		public String toString() {
 
-			return col + ", " + row + ", " + r + ", " + g + ", " + b;
+			return col + "," + row + "," + r + "," + g + "," + b;
 		}
 	}
 
