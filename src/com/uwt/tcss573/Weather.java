@@ -1,21 +1,38 @@
 package com.uwt.tcss573;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.Scanner;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -43,13 +60,25 @@ public class Weather {
 	final int CODE_MOSTLY_SUNNY = 34;
 	final int CODE_THUNDERSTORM = 4;
 	final int CODE_SCATTERED_THUNDERSTORM = 47;
+	static ArrayList<String> settings = new ArrayList<>();
+
+	/**
+	 * Default constructor.
+	 */
+	public Weather() {
+		settings.add("val1");
+		settings.add("val2");
+		settings.add("val3");
+		settings.add("val4");
+		settings.add("val5");
+	}
 
 	static Color[][] colorMatrix = new Color[32][64];
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getWeather1(@QueryParam("lat") float latitude, 
-            @QueryParam("lng") float longitude) throws IOException {
+	public String getWeather1(@QueryParam("lat") float latitude, @QueryParam("lng") float longitude)
+			throws IOException {
 		// Create and initialize empty matrix
 		int[][] matrix = new int[32][64];
 		initializeMatrix(matrix);
@@ -66,35 +95,40 @@ public class Weather {
 		// Convert the matrix to array
 		LinkedList<Pixel> pixelArray = convertMatrix(matrix);
 
-		
-		
 		// add "\n" to indicate
 		String responseText = "";
-		 
-		 for (int i = 0; i < pixelArray.size(); i++) {
-		 responseText+= pixelArray.get(i).toString()+"\n";		
-		 }
-		 
-		// JSONObject obj = new JSONObject();
 
-	    //  obj.put("layout", responseText);
-	     // obj.put(, value)
-		 
-		// Gson mGson = new Gson();
-		//	String test = mGson.toJson(responseText);
-			
+		for (int i = 0; i < pixelArray.size(); i++) {
+			responseText += pixelArray.get(i).toString() + "\n";
+		}
 		// Need to arrange into JSON String here.
-		return  responseText;     
+		return responseText;
 	}
 
-	// getWeather Response
-	// {
-	// “settings”: {
-	// “”
-	// },
-	// “layout”: “1,1,255,255,0\n2,2,255,255,0”
-	// }
+	
+	@POST
+	@Path("/storesettings")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String storeSettings(String msg) throws IOException, SQLException, ClassNotFoundException {
 
+		settings.add(msg);
+		return "Settings <"+msg+"> was successfully added to our database.";
+	}
+	
+	@GET
+	@Path("/getsettings")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getSettings() throws IOException, SQLException, ClassNotFoundException {
+		String result = "";
+		for (int i = 0; i < settings.size(); i++) {
+			result+= settings.get(i) + " "; 
+		}
+		return result;
+	}
+	
+
+	
 	/**
 	 * Add the weather icon to the matrix layout.
 	 * 
@@ -120,25 +154,24 @@ public class Weather {
 
 		LinkedList<Pixel> layout = readFile(filename);
 		addToMatrix(layout, matrix, 20, 17);
-
 	}
 
 	/**
 	 * Add the temperature to the matrix layout.
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 *
 	 */
-	 private void addTemperature(String theTemperature, int[][] matrix) throws IOException {
-	 // Convert the temperature to char array (e.g. from 12 to [1,2])
-	 char[] tempChar = theTemperature.toCharArray();
-	
-	 LinkedList<Pixel> layout = readFile(tempChar[0] + ".csv");
-	 addToMatrix(layout, matrix, 2, 20);
-	
-	 LinkedList<Pixel> mLayout = readFile(tempChar[1] + ".csv");
-	 addToMatrix(mLayout, matrix, 8, 20);
+	private void addTemperature(String theTemperature, int[][] matrix) throws IOException {
+		// Convert the temperature to char array (e.g. from 12 to [1,2])
+		char[] tempChar = theTemperature.toCharArray();
 
-	 }
+		LinkedList<Pixel> layout = readFile(tempChar[0] + ".csv");
+		addToMatrix(layout, matrix, 2, 20);
+
+		LinkedList<Pixel> mLayout = readFile(tempChar[1] + ".csv");
+		addToMatrix(mLayout, matrix, 8, 20);
+	}
 
 	/**
 	 * Add the layout to the matrix according to the starting column and row
@@ -210,7 +243,7 @@ public class Weather {
 	 * 
 	 * @return JSON object containing weather data.
 	 * @throws IOException
-	 */ 
+	 */
 	public String getWeather(float latitude, float longitude) throws IOException {
 
 		String result = "";
@@ -315,6 +348,7 @@ public class Weather {
 
 		BufferedReader br = new BufferedReader(
 				new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(filename)));
+
 		LinkedList<Pixel> layout = new LinkedList<>();
 
 		String sCurrentLine = "";
@@ -330,7 +364,7 @@ public class Weather {
 		if (br != null) {
 			br.close();
 		}
-		 return layout;
+		return layout;
 	}
 
 	/**
