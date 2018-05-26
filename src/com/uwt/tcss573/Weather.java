@@ -2,6 +2,7 @@ package com.uwt.tcss573;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,6 +44,8 @@ import java.awt.Color;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
+
+import io.minio.MinioClient;
 
 /**
  * 
@@ -111,21 +114,59 @@ public class Weather {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String storeSettings(String msg) throws IOException, SQLException, ClassNotFoundException {
-
-		settings.add(msg);
+		
+		MinioClient minioClient;
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+	
+			// Since cannot modify s3 object, so remove the file and create a new one
+		    minioClient.removeObject("smart-clock-settings", "settings.txt");
+		    
+		    // Store settings into string
+		    String settingsString = msg;
+		    
+		    // below dont need to modify anything. This code simply create a file in s3 bucket.
+		    ByteArrayInputStream bais = new ByteArrayInputStream(settingsString.getBytes("UTF-8"));
+		    minioClient.putObject("smart-clock-settings", "settings.txt", bais, bais.available(), "application/octet-stream");
+		    bais.close();
+		    ////////
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
 		return "Settings <"+msg+"> was successfully added to our database.";
 	}
 	
 	@GET
 	@Path("/getsettings")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getSettings() throws IOException, SQLException, ClassNotFoundException {
-		String result = "";
-		for (int i = 0; i < settings.size(); i++) {
-			result+= settings.get(i) + " "; 
+	public String getSettings() {
+		MinioClient minioClient;
+		String settingsString = "";
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+			//Retrieve string from S3.
+		    InputStream stream = minioClient.getObject("smart-clock-settings", "settings.txt");
+		       byte[] buf = new byte[16384];
+		        int bytesRead;
+		        while ((bytesRead = stream.read(buf, 0, buf.length)) >= 0) {
+		        	settingsString += new String(buf, 0, bytesRead);
+		        }
+		        stream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return result;
+        
+	    
+		return settingsString;
 	}
+  
+  
 	
 
 	
