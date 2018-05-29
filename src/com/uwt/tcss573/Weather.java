@@ -119,8 +119,9 @@ public class Weather {
 		try {
 			// Initialize connection
 			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
-			
-	
+		
+			String file = minioClient.getObject("smart-clock-settings", "settings.txt").toString();
+			if (!file.equals(msg)) {
 			// Since cannot modify s3 object, so remove the file and create a new one
 		    minioClient.removeObject("smart-clock-settings", "settings.txt");
 		    
@@ -132,12 +133,13 @@ public class Weather {
 		    minioClient.putObject("smart-clock-settings", "settings.txt", bais, bais.available(), "application/octet-stream");
 		    bais.close();
 		    ////////
-		    
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	
-		return "Settings <"+msg+"> was successfully added to our database.";
+		return "Settings successfully stored in DB.";
+		
 	}
 	
 	@GET
@@ -165,11 +167,7 @@ public class Weather {
 	    
 		return settingsString;
 	}
-  
-  
-	
-
-	
+ 
 	/**
 	 * Add the weather icon to the matrix layout.
 	 * 
@@ -194,7 +192,7 @@ public class Weather {
 		}
 
 		LinkedList<Pixel> layout = readFile(filename);
-		addToMatrix(layout, matrix, 20, 17);
+		addToMatrix(layout, matrix, 27, 17); // Added +7 at 3rd parameter here after doing degree symbol
 	}
 
 	/**
@@ -212,6 +210,10 @@ public class Weather {
 
 		LinkedList<Pixel> mLayout = readFile(tempChar[1] + ".csv");
 		addToMatrix(mLayout, matrix, 8, 20);
+		
+		LinkedList<Pixel> nLayout = readFile("degreesign.csv");
+		addToMatrix(nLayout, matrix, 14, 20);
+		
 	}
 
 	/**
