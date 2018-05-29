@@ -206,13 +206,13 @@ public class Weather {
 		char[] tempChar = theTemperature.toCharArray();
 
 		LinkedList<Pixel> layout = readFile(tempChar[0] + ".csv");
-		addToMatrix(layout, matrix, 2, 20);
+		addToMatrix(layout, matrix, 2, 24); ///2
 
 		LinkedList<Pixel> mLayout = readFile(tempChar[1] + ".csv");
-		addToMatrix(mLayout, matrix, 8, 20);
+		addToMatrix(mLayout, matrix, 8, 24); //8
 		
-		LinkedList<Pixel> nLayout = readFile("degreesign.csv");
-		addToMatrix(nLayout, matrix, 14, 20);
+		LinkedList<Pixel> nLayout = readFile("symbol_2.csv");
+		addToMatrix(nLayout, matrix, 14, 25); //14
 		
 	}
 
