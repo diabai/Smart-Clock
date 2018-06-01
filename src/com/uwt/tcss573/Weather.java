@@ -105,8 +105,8 @@ public class Weather {
 		dateFormat = new SimpleDateFormat("HH");
 		String timeString = dateFormat.format(now);
 		System.out.println(timeString);
-		String weatherString = "\n" + dateString + "," + weather.get(1);
-		String tempString = "\n" + dateString + "," + timeString + "," + temp + "," + hum;
+		String weatherString = dateString + "," + weather.get(1);
+		String tempString = dateString + "," + timeString + "," + temp + "," + hum;
 		
 		appendData("weather.csv", weatherString);
 		appendData("tempHum.csv", tempString);
@@ -451,7 +451,7 @@ public class Weather {
 		        
 		        // Append new data
 		        if (shouldInsert) {
-					dataString += msg;
+					dataString += "\n" + msg;
 
 					minioClient.removeObject("smart-clock-settings", filename);
 				    ByteArrayInputStream bais = new ByteArrayInputStream(dataString.getBytes("UTF-8"));
