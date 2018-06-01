@@ -23,7 +23,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -80,7 +82,8 @@ public class Weather {
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getWeather1(@QueryParam("lat") float latitude, @QueryParam("lng") float longitude)
+	public String getWeather1(@QueryParam("lat") float latitude, @QueryParam("lng") float longitude
+				  , @QueryParam("temp") int temp, @QueryParam("hum") int hum)
 			throws IOException {
 		// Create and initialize empty matrix
 		int[][] matrix = new int[32][64];
@@ -89,12 +92,26 @@ public class Weather {
 		// Get Weather data and process it
 		String response = getWeather(latitude, longitude);
 		ArrayList<String> weather = extractData(response);
-
+		
 		// Adding layout to the matrix
 		int weatherCode = Integer.parseInt(weather.get(0));
 		addWeatherIcon(weatherCode, matrix);
 		addTemperature(weather.get(1), matrix);
-
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+		Date now = new Date();
+		String dateString = dateFormat.format(now);
+		System.out.println(dateString);
+		dateFormat = new SimpleDateFormat("HH");
+		String timeString = dateFormat.format(now);
+		System.out.println(timeString);
+		String weatherString = "\n" + dateString + "," + weather.get(1);
+		String tempString = "\n" + dateString + "," + timeString + "," + temp + "," + hum;
+		
+		appendData("weather.csv", weatherString);
+		appendData("tempHum.csv", tempString);
+		
+		
 		// Convert the matrix to array
 		LinkedList<Pixel> pixelArray = convertMatrix(matrix);
 
@@ -107,7 +124,7 @@ public class Weather {
 		// Need to arrange into JSON String here.
 		return responseText;
 	}
-
+	
 	
 	@POST
 	@Path("/storesettings")
@@ -167,7 +184,207 @@ public class Weather {
 	    
 		return settingsString;
 	}
- 
+	
+	@GET
+	@Path("/getdatarange")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getDataRange(@QueryParam("type") String type) {
+		String filename;
+        String responseString = "";
+
+		if (type.equalsIgnoreCase("weather")) {
+			filename = "weather.csv";
+		} else {
+			filename = "tempHum.csv";
+		}
+		MinioClient minioClient;
+		String rangeString = "";
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+			//Retrieve string from S3.
+		    InputStream stream = minioClient.getObject("smart-clock-settings", filename);
+		       byte[] buf = new byte[16384];
+		        int bytesRead;
+		        while ((bytesRead = stream.read(buf, 0, buf.length)) >= 0) {
+		        	rangeString += new String(buf, 0, bytesRead);
+		        }
+		        stream.close();
+		        
+		        String[] rangeLines = rangeString.split("\\r?\\n");
+		        for (int i = 1; i < rangeLines.length; i++) {
+		        	String[] range = rangeLines[i].split(",");
+		        	
+		        	if (type.equalsIgnoreCase("weather")) {
+		        		responseString += range[0] + "\n";
+		        	} else {
+		        		responseString += range[0] + "," + range[1] + "\n";
+		        	}
+		        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+	    
+		return responseString;
+	}
+	
+	@GET
+	@Path("/getweatherrecord")
+ 	@Produces(MediaType.TEXT_PLAIN)
+	public String getWeatherRecord(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate) {
+		String filename = "weather.csv";
+		
+		MinioClient minioClient;
+		String weatherString = "";
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+			//Retrieve string from S3.
+		    InputStream stream = minioClient.getObject("smart-clock-settings", filename);
+		       byte[] buf = new byte[16384];
+		        int bytesRead;
+		        while ((bytesRead = stream.read(buf, 0, buf.length)) >= 0) {
+		        	weatherString += new String(buf, 0, bytesRead);
+		        }
+		        stream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		String[] weatherLines = weatherString.split("\\r?\\n");
+		int startIndex = 1, endIndex = weatherLines.length;
+		for (int i = 1; i < weatherLines.length; i++) {
+			String[] keyValue = weatherLines[i].split(",");
+			if (keyValue[0].equalsIgnoreCase(startDate)) {
+				startIndex = i;
+			}
+		
+			if (keyValue[0].equalsIgnoreCase(endDate)) {
+				endIndex = i;
+			}
+		}
+		
+		String responseString = weatherLines[0] + "\n";
+		
+		for (int i = startIndex; i <= endIndex; i++) {
+			responseString += weatherLines[i] + "\n";
+		}
+		
+		
+		return responseString;
+	}
+	
+	@GET
+	@Path("/gettemprecord")
+ 	@Produces(MediaType.TEXT_PLAIN)
+	public String getTempHumRecord(@QueryParam("start_date") String startDate, @QueryParam("end_date") String endDate
+			, @QueryParam("start_hour") String startHour, @QueryParam("end_hour") String endHour) {
+		String filename = "tempHum.csv";
+		
+		MinioClient minioClient;
+		String tempString = "";
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+			//Retrieve string from S3.
+		    InputStream stream = minioClient.getObject("smart-clock-settings", filename);
+		       byte[] buf = new byte[16384];
+		        int bytesRead;
+		        while ((bytesRead = stream.read(buf, 0, buf.length)) >= 0) {
+		        	tempString += new String(buf, 0, bytesRead);
+		        }
+		        stream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		String[] tempLines = tempString.split("\\r?\\n");
+		int startIndex = 1, endIndex = tempLines.length;
+		for (int i = 1; i < tempLines.length; i++) {
+			String[] keyValue = tempLines[i].split(",");
+			if (keyValue[0].equalsIgnoreCase(startDate) && keyValue[1].equalsIgnoreCase(startHour)) {
+				startIndex = i;
+			}
+		
+			if (keyValue[0].equalsIgnoreCase(endDate) && keyValue[1].equalsIgnoreCase(endHour)) {
+				endIndex = i;
+			}
+		}
+		
+		String responseString = tempLines[0] + "\n";
+		
+		for (int i = startIndex; i <= endIndex; i++) {
+			responseString += tempLines[i] + "\n";
+		}
+		
+		
+		return responseString;
+	}
+	
+	/**
+	 * Update the current sensor status in sensor_status.txt
+	 *
+	 */
+	@POST
+	@Path("/heartbeat")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String heartbeat(String msg) {
+		MinioClient minioClient;
+		try {
+			// Initialize connection
+	 		minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+		
+		    minioClient.removeObject("smart-clock-settings", "sensor_status.txt");
+		    
+		    // Store settings into string
+		    String settingsString = msg;
+		    
+		    ByteArrayInputStream bais = new ByteArrayInputStream(settingsString.getBytes("UTF-8"));
+		    minioClient.putObject("smart-clock-settings", "sensor_status.txt", bais, bais.available(), "application/octet-stream");
+		    bais.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+		return "Status successfully stored in DB.";	
+	}
+	
+	/**
+	 * return sensor status
+	 *
+	 */
+	@GET
+	@Path("/getsensorstatus")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getSensorStatus() {
+		MinioClient minioClient;
+		String settingsString = "";
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+			//Retrieve string from S3.
+		    InputStream stream = minioClient.getObject("smart-clock-settings", "sensor_status.txt");
+		       byte[] buf = new byte[16384];
+		        int bytesRead;
+		        while ((bytesRead = stream.read(buf, 0, buf.length)) >= 0) {
+		        	settingsString += new String(buf, 0, bytesRead);
+		        }
+		        stream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+	    
+		return settingsString;
+	}
+	
 	/**
 	 * Add the weather icon to the matrix layout.
 	 * 
@@ -196,23 +413,108 @@ public class Weather {
 	}
 
 	/**
+	 * Append Data to the File in S3.
+	 * @param filename
+	 * @param msg
+	 */
+	private void appendData(String filename, String msg) {
+		MinioClient minioClient;
+		String dataString = "";
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+			//Retrieve string from S3.
+		    	InputStream stream = minioClient.getObject("smart-clock-settings", filename);
+		       	byte[] buf = new byte[16384];
+		        int bytesRead;
+		        while ((bytesRead = stream.read(buf, 0, buf.length)) >= 0) {
+		        	dataString += new String(buf, 0, bytesRead);
+		        }
+		        stream.close();
+		        boolean shouldInsert = false;
+		        String[] dataLines = dataString.split("\\r?\\n");
+	        	String latestData = dataLines[dataLines.length - 1];
+	        	String[] oldKeyValue = latestData.split(",");
+	        	String[] newKeyValue = msg.split(",");
+		        if (filename.equals("weather.csv")) {
+		        	if (!oldKeyValue[0].equalsIgnoreCase(newKeyValue[0])) {
+		        		shouldInsert = true;
+		        	}
+		        	
+		        } else if (filename.equals("tempHum.csv")) {
+		        	if (!oldKeyValue[0].equalsIgnoreCase(newKeyValue[0]) &&
+		        			oldKeyValue[1].equals(newKeyValue[1])) {
+		        		shouldInsert = true;
+		        	}
+		        }
+		        
+		        // Append new data
+		        if (shouldInsert) {
+					dataString += msg;
+
+					minioClient.removeObject("smart-clock-settings", filename);
+				    ByteArrayInputStream bais = new ByteArrayInputStream(dataString.getBytes("UTF-8"));
+				    minioClient.putObject("smart-clock-settings", filename, bais, bais.available(), "application/octet-stream");
+				    bais.close();
+		        }
+
+		        
+		       
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
 	 * Add the temperature to the matrix layout.
 	 * 
 	 * @throws IOException
 	 *
 	 */
 	private void addTemperature(String theTemperature, int[][] matrix) throws IOException {
+		MinioClient minioClient;
+		String settingsString = "";
+		try {
+			// Initialize connection
+			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q", "abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			
+			//Retrieve string from S3.
+		    InputStream stream = minioClient.getObject("smart-clock-settings", "settings.txt");
+		       byte[] buf = new byte[16384];
+		        int bytesRead;
+		        while ((bytesRead = stream.read(buf, 0, buf.length)) >= 0) {
+		        	settingsString += new String(buf, 0, bytesRead);
+		        }
+		        stream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		int red = 255, blue = 255, green = 0;
+		String[] settings = settingsString.split("\\r?\\n");
+		for (int i = 0; i < settings.length; i++) {
+			String[] keyValue = settings[i].split("=");
+			if (keyValue[0].equalsIgnoreCase("wRed")) {
+				red = Integer.parseInt(keyValue[1]);
+			} else if (keyValue[0].equalsIgnoreCase("wGreen")) {
+				green = Integer.parseInt(keyValue[1]);
+			} else if (keyValue[0].equalsIgnoreCase("wBlue")) {
+				blue = Integer.parseInt(keyValue[1]);
+			}
+		}
+		Color color = new Color(red, green, blue);
 		// Convert the temperature to char array (e.g. from 12 to [1,2])
 		char[] tempChar = theTemperature.toCharArray();
 
 		LinkedList<Pixel> layout = readFile(tempChar[0] + ".csv");
-		addToMatrix(layout, matrix, 2, 24); ///2
+		addToMatrixCC(layout, matrix, 2, 24, color); ///2
 
 		LinkedList<Pixel> mLayout = readFile(tempChar[1] + ".csv");
-		addToMatrix(mLayout, matrix, 8, 24); //8
+		addToMatrixCC(mLayout, matrix, 8, 24, color); //8
 		
 		LinkedList<Pixel> nLayout = readFile("symbol_2.csv");
-		addToMatrix(nLayout, matrix, 14, 25); //14
+		addToMatrixCC(nLayout, matrix, 14, 25, color); //14
 		
 	}
 
@@ -235,6 +537,23 @@ public class Weather {
 			b = theLayout.get(i).getB();
 
 			colorMatrix[row + startRow][col + startCol] = new Color(r, g, b);
+		}
+	}
+	
+	/**
+	 * Add the layout to the matrix with custom color according to the starting column and row
+	 *
+	 */
+	public void addToMatrixCC(LinkedList<Pixel> theLayout, int[][] matrix, int startCol, int startRow, Color color) {
+		int row, col = 0;
+		for (int i = 0; i < theLayout.size(); i++) {
+			row = theLayout.get(i).getRow();
+			col = theLayout.get(i).getCol();
+			System.out.println("row = " + row + " col = " + col);
+			// Not sure it is [col][row] or [row][col]
+			matrix[row + startRow][col + startCol] = 1;
+
+			colorMatrix[row + startRow][col + startCol] = color;
 		}
 	}
 
@@ -465,3 +784,4 @@ public class Weather {
 	}
 
 }
+
