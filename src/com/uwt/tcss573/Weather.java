@@ -432,20 +432,20 @@ public class Weather {
 		        	dataString += new String(buf, 0, bytesRead);
 		        }
 		        stream.close();
-		        boolean shouldInsert = false;
+		        boolean shouldInsert = true;
 		        String[] dataLines = dataString.split("\\r?\\n");
 	        	String latestData = dataLines[dataLines.length - 1];
 	        	String[] oldKeyValue = latestData.split(",");
 	        	String[] newKeyValue = msg.split(",");
 		        if (filename.equals("weather.csv")) {
-		        	if (!oldKeyValue[0].equalsIgnoreCase(newKeyValue[0])) {
-		        		shouldInsert = true;
+		        	if (oldKeyValue[0].equalsIgnoreCase(newKeyValue[0])) {
+		        		shouldInsert = false;
 		        	}
 		        	
 		        } else if (filename.equals("tempHum.csv")) {
-		        	if (!oldKeyValue[0].equalsIgnoreCase(newKeyValue[0]) &&
-		        			oldKeyValue[1].equals(newKeyValue[1])) {
-		        		shouldInsert = true;
+		        	if (oldKeyValue[0].equalsIgnoreCase(newKeyValue[0]) &&
+		        			oldKeyValue[1].equalsIgnoreCase(newKeyValue[1])) {
+		        		shouldInsert = false;
 		        	}
 		        }
 		        
