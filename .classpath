@@ -13,25 +13,35 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-core-4.4.9/lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-core-4.4.9/lib/httpcore-4.4.9.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-core-4.4.9/lib/httpcore-ab-4.4.9.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-core-4.4.9/lib/httpcore-nio-4.4.9.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/commons-codec-1.10.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/fluent-hc-4.5.5.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/httpclient-4.5.5.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/httpclient-cache-4.5.5.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/httpclient-win-4.5.5.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/httpcore-4.4.9.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/httpmime-4.5.5.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/jna-4.4.0.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/httpcomponents-client-4.5 2.5/lib/jna-platform-4.4.0.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/geoip-api-1.2.10.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/json-20180130-javadoc.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/json-20180130-sources.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/json-20180130.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/unirest-java-1.4.9.jar"/>
-	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/gson-2.6.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/commons-io-2.6.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/geoip-api-1.2.10.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/gson-2.6.0-annotations-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/gson-2.6.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/gson-2.6.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/gson-2.6.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/fluent-hc-4.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/httpclient-4.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/httpclient-cache-4.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/httpclient-win-4.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/httpcore-4.4.9.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/httpmime-4.5.5.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/jna-4.4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-client-4.5 2.5/lib/jna-platform-4.4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-core-4.4.9/lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-core-4.4.9/lib/httpcore-4.4.9.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-core-4.4.9/lib/httpcore-ab-4.4.9.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcomponents-core-4.4.9/lib/httpcore-nio-4.4.9.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcore-4.4.9 2.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/httpcore-4.4.9.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/json-20180130-javadoc (1).jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/json-20180130-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/json-20180130-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/json-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/jsoup-1.11.2.jar"/>
+	<classpathentry kind="lib" path="/Users/ikdiabate/Downloads/my_jar_files/unirest-java-1.4.9.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

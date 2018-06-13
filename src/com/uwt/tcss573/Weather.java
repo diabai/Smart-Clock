@@ -118,24 +118,23 @@ public class Weather {
 		MinioClient minioClient;
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			String file = minioClient.getObject("smart-clock-settings", "settings.txt").toString();
 			if (!file.equals(msg)) {
-				// Since cannot modify s3 object, so remove the file and create a new one
+				// Since cannot modify s3 object, remove the file and create a new one
 				minioClient.removeObject("smart-clock-settings", "settings.txt");
 
 				// Store settings into string
 				String settingsString = msg;
 
-				// below dont need to modify anything. This code simply create a file in s3
-				// bucket.
+				// Creates a file in a s3 bucket.
 				ByteArrayInputStream bais = new ByteArrayInputStream(settingsString.getBytes("UTF-8"));
 				minioClient.putObject("smart-clock-settings", "settings.txt", bais, bais.available(),
 						"application/octet-stream");
 				bais.close();
-				////////
+		
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -158,8 +157,8 @@ public class Weather {
 		String settingsString = "";
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			// Retrieve string from S3.
 			InputStream stream = minioClient.getObject("smart-clock-settings", "settings.txt");
@@ -192,8 +191,8 @@ public class Weather {
 		String rangeString = "";
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			// Retrieve string from S3.
 			InputStream stream = minioClient.getObject("smart-clock-settings", filename);
@@ -231,8 +230,8 @@ public class Weather {
 		String weatherString = "";
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			// Retrieve string from S3.
 			InputStream stream = minioClient.getObject("smart-clock-settings", filename);
@@ -317,7 +316,7 @@ public class Weather {
 	}
 
 	/**
-	 * Update the current sensor status in sensor_status.txt
+	 * Updates the current sensor status in sensor_status.txt
 	 *
 	 */
 	@POST
@@ -328,8 +327,8 @@ public class Weather {
 		MinioClient minioClient;
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			minioClient.removeObject("smart-clock-settings", "sensor_status.txt");
 
@@ -360,8 +359,8 @@ public class Weather {
 		String settingsString = "";
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			// Retrieve string from S3.
 			InputStream stream = minioClient.getObject("smart-clock-settings", "sensor_status.txt");
@@ -403,7 +402,7 @@ public class Weather {
 		}
 
 		LinkedList<Pixel> layout = readFile(filename);
-		addToMatrix(layout, matrix, 27, 17); // Added +7 at 3rd parameter here after doing degree symbol
+		addToMatrix(layout, matrix, 27, 17); 
 	}
 
 	/**
@@ -417,8 +416,8 @@ public class Weather {
 		String dataString = "";
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			// Retrieve string from S3.
 			InputStream stream = minioClient.getObject("smart-clock-settings", filename);
@@ -472,8 +471,8 @@ public class Weather {
 		String settingsString = "";
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			// Retrieve string from S3.
 			InputStream stream = minioClient.getObject("smart-clock-settings", "settings.txt");
@@ -531,7 +530,6 @@ public class Weather {
 			row = theLayout.get(i).getRow();
 			col = theLayout.get(i).getCol();
 			System.out.println("row = " + row + " col = " + col);
-			// Not sure it is [col][row] or [row][col]
 			matrix[row + startRow][col + startCol] = 1;
 
 			r = theLayout.get(i).getR();
@@ -563,7 +561,6 @@ public class Weather {
 			row = theLayout.get(i).getRow();
 			col = theLayout.get(i).getCol();
 			System.out.println("row = " + row + " col = " + col);
-			// Not sure it is [col][row] or [row][col]
 			matrix[row + startRow][col + startCol] = 1;
 
 			colorMatrix[row + startRow][col + startCol] = color;
