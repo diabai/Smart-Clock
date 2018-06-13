@@ -23,7 +23,7 @@ Settings such as color of various text on the LED matrix panel, time interval to
 
 ![Light sensor](light_sensor.png)
 
-![Temperature sensor](temperature_sensor.png)
+![Temperature sensor](temp_sensor.png)
 
 ![LED ring](led_ring.png)
 
