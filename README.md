@@ -29,4 +29,4 @@ Settings such as color of various text on the LED matrix panel, time interval to
 
 ![LED ring on](led_ring_on.png)
 
-![Settings GUI](settings_gui.png)
+![Settings GUI](settings_gui.jpg)
