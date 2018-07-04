@@ -278,8 +278,8 @@ public class Weather {
 		String tempString = "";
 		try {
 			// Initialize connection
-			minioClient = new MinioClient("https://s3.amazonaws.com", "AKIAIWHBXX6HIVNDII3Q",
-					"abpg9V9EtBnNA+bzMw2tcLS9OqhSIDpdNNrb1P3R");
+			minioClient = new MinioClient("https://s3.amazonaws.com", "your_access_key",
+					"your_secret_pass");
 
 			// Retrieve string from S3.
 			InputStream stream = minioClient.getObject("smart-clock-settings", filename);
